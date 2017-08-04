@@ -1,0 +1,12 @@
+.app-container {
+    display: flex;
+    flex-direction: row;
+}
+
+/* .app-pokemon-list {
+
+} */
+
+/* .app-pokemon-details {
+    
+} */

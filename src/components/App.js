@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Route, Link, } from 'react-router-dom';
+import { BrowserRouter, Route, Link, Redirect, } from 'react-router-dom';
+import './App.css';
 
 class App extends Component {
   render() {
     return (
       <BrowserRouter>
-        <div>
-          <SearchablePokemonList />
+        <div className="app-container">
+          <Route path="/pokemons" component={SearchablePokemonList} />
+          <Route path="/pokemons/:pokemonName" component={PokemonDetails} />
+          {/* <Redirect from="/" to="/pokemons" /> */}
         </div>
       </BrowserRouter>
     );
@@ -16,7 +19,9 @@ class App extends Component {
 class PokemonListItem extends Component {
   render() {
     return (
-      <li>{this.props.pokemon.name}</li>
+      <li>
+        <Link to={`/pokemons/${this.props.pokemon.name}`}>{this.props.pokemon.name}</Link>
+      </li>
     );
   }
 }
@@ -79,13 +84,21 @@ class SearchablePokemonList extends Component {
 
   render() {
     return (
-      <div>
+      <div className="app-pokemon-list">
         <SearchBar
           searchText={this.state.searchText}
           onSearchTextInput={this.handleSearchTextInput}
         />
         <PokemonList pokemons={this.state.pokemons} />
       </div>
+    );
+  }
+}
+
+class PokemonDetails extends Component {
+  render() {
+    return (
+      <div>{this.props.match.params.pokemonName}</div>
     );
   }
 }
