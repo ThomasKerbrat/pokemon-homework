@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route, Link, Redirect, } from 'react-router-dom';
 import './App.css';
+import Pokedex from 'pokedex-promise-v2';
+
+const API = new Pokedex();
 
 class App extends Component {
   render() {
@@ -67,19 +70,29 @@ class SearchablePokemonList extends Component {
     super(props);
     this.state = {
       searchText: '',
-      pokemons: POKEMONS,
+      pokemons: [],
+      initialPokemonsList: [],
     };
 
     this.handleSearchTextInput = this.handleSearchTextInput.bind(this);
   }
 
+  componentDidMount() {
+    API.getPokemonsList({ limit: 20, offset: 0 }).then(response => {
+      this.setState({
+        pokemons: response.results,
+        initialPokemonsList: response.results,
+      })
+    })
+  }
+
   handleSearchTextInput(searchText) {
-    this.setState({
+    this.setState(previous => ({
       searchText: searchText,
       pokemons: searchText
-        ? POKEMONS.filter((pokemon) => pokemon.name.indexOf(searchText) !== -1)
-        : POKEMONS,
-    });
+        ? previous.initialPokemonsList.filter((pokemon) => pokemon.name.indexOf(searchText) !== -1)
+        : previous.initialPokemonsList,
+    }));
   }
 
   render() {
@@ -102,88 +115,5 @@ class PokemonDetails extends Component {
     );
   }
 }
-
-const POKEMONS = [
-  {
-    "url": "http://pokeapi.co/api/v2/pokemon/1/",
-    "name": "bulbasaur"
-  },
-  {
-    "url": "http://pokeapi.co/api/v2/pokemon/2/",
-    "name": "ivysaur"
-  },
-  {
-    "url": "http://pokeapi.co/api/v2/pokemon/3/",
-    "name": "venusaur"
-  },
-  {
-    "url": "http://pokeapi.co/api/v2/pokemon/4/",
-    "name": "charmander"
-  },
-  {
-    "url": "http://pokeapi.co/api/v2/pokemon/5/",
-    "name": "charmeleon"
-  },
-  {
-    "url": "http://pokeapi.co/api/v2/pokemon/6/",
-    "name": "charizard"
-  },
-  {
-    "url": "http://pokeapi.co/api/v2/pokemon/7/",
-    "name": "squirtle"
-  },
-  {
-    "url": "http://pokeapi.co/api/v2/pokemon/8/",
-    "name": "wartortle"
-  },
-  {
-    "url": "http://pokeapi.co/api/v2/pokemon/9/",
-    "name": "blastoise"
-  },
-  {
-    "url": "http://pokeapi.co/api/v2/pokemon/10/",
-    "name": "caterpie"
-  },
-  {
-    "url": "http://pokeapi.co/api/v2/pokemon/11/",
-    "name": "metapod"
-  },
-  {
-    "url": "http://pokeapi.co/api/v2/pokemon/12/",
-    "name": "butterfree"
-  },
-  {
-    "url": "http://pokeapi.co/api/v2/pokemon/13/",
-    "name": "weedle"
-  },
-  {
-    "url": "http://pokeapi.co/api/v2/pokemon/14/",
-    "name": "kakuna"
-  },
-  {
-    "url": "http://pokeapi.co/api/v2/pokemon/15/",
-    "name": "beedrill"
-  },
-  {
-    "url": "http://pokeapi.co/api/v2/pokemon/16/",
-    "name": "pidgey"
-  },
-  {
-    "url": "http://pokeapi.co/api/v2/pokemon/17/",
-    "name": "pidgeotto"
-  },
-  {
-    "url": "http://pokeapi.co/api/v2/pokemon/18/",
-    "name": "pidgeot"
-  },
-  {
-    "url": "http://pokeapi.co/api/v2/pokemon/19/",
-    "name": "rattata"
-  },
-  {
-    "url": "http://pokeapi.co/api/v2/pokemon/20/",
-    "name": "raticate"
-  }
-];
 
 export default App;
