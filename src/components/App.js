@@ -182,9 +182,23 @@ class SearchablePokemonList extends Component {
 }
 
 class PokemonDetails extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      pokemon: POKEMONS.find(pokemon => pokemon.identifier === props.match.params.pokemonName),
+    }
+  }
+
+  getSpriteUrl(pokemon) {
+    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`;
+  }
+
   render() {
     return (
-      <div>{this.props.match.params.pokemonName}</div>
+      <div style={{ height: '100px', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+        <img src={this.getSpriteUrl(this.state.pokemon)} />
+        <h1>{this.state.pokemon.identifier}</h1>
+      </div>
     );
   }
 }
