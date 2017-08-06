@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { BrowserRouter, Route, Link, } from 'react-router-dom';
 import './App.css';
 
+let POKEMONS, STATS_BY_TYPES;
+
 class App extends Component {
   render() {
     return (
@@ -20,7 +22,7 @@ class PokemonListItem extends Component {
   render() {
     return (
       <li>
-        <Link to={`/pokemons/${this.props.pokemon.name}`}>{this.props.pokemon.name}</Link>
+        <Link to={`/pokemons/${this.props.pokemon.identifier}`}>{this.props.pokemon.identifier}</Link>
       </li>
     );
   }
@@ -31,7 +33,7 @@ class PokemonList extends Component {
     return (
       <ul>
         {this.props.pokemons.map((pokemon) => (
-          <PokemonListItem pokemon={pokemon} key={pokemon.name} />
+          <PokemonListItem pokemon={pokemon} key={pokemon.identifier} />
         ))}
       </ul>
     );
@@ -68,7 +70,6 @@ class SearchablePokemonList extends Component {
     this.state = {
       searchText: '',
       pokemons: [],
-      initialPokemonsList: [],
     };
 
     this.handleSearchTextInput = this.handleSearchTextInput.bind(this);
@@ -150,22 +151,21 @@ class SearchablePokemonList extends Component {
       });
 
       // console.timeEnd('computations');
+      window.pokemons = pokemons
 
-      window.___pokemons = pokemons;
-
-      console.log(pokemons);
-      console.log(baseStatsByTypes);
+      POKEMONS = pokemons
+      STATS_BY_TYPES = baseStatsByTypes
     })
       .catch(error => console.error(error))
   }
 
   handleSearchTextInput(searchText) {
-    this.setState(previous => ({
+    this.setState({
       searchText: searchText,
-      pokemons: searchText
-        ? previous.initialPokemonsList.filter((pokemon) => pokemon.name.indexOf(searchText) !== -1)
-        : previous.initialPokemonsList,
-    }));
+      pokemons: typeof searchText === 'string' && searchText.length > 1
+        ? POKEMONS.filter((pokemon) => pokemon.identifier.indexOf(searchText) !== -1)
+        : [],
+    });
   }
 
   render() {
