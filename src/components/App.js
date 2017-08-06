@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route, Link, Redirect, } from 'react-router-dom';
 import './App.css';
-import Pokedex from 'pokedex-promise-v2';
-
-const API = new Pokedex();
 
 class App extends Component {
   render() {
@@ -78,12 +75,7 @@ class SearchablePokemonList extends Component {
   }
 
   componentDidMount() {
-    API.getPokemonsList({ limit: 20, offset: 0 }).then(response => {
-      this.setState({
-        pokemons: response.results,
-        initialPokemonsList: response.results,
-      })
-    })
+    // TODO: Load some pokemons from the IndexedDB.
   }
 
   handleSearchTextInput(searchText) {
