@@ -1,8 +1,23 @@
 import React, { Component } from 'react'
 
+import { getTweets } from '../services/twitter'
 import { PokemonStats } from './PokemonStats'
 
 export class PokemonDetails extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      tweets: [],
+    }
+  }
+
+  componentDidMount() {
+    getTweets(this.props.pokemon.identifier)
+      .then(response => { console.log(response); return response.json() })
+      .then(json => console.log(json))
+      .catch(error => console.error(error))
+  }
+
   getSpriteUrl(pokemon) {
     return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`
   }
@@ -37,6 +52,14 @@ export class PokemonDetails extends Component {
               stats={this.props.baseStatsByTypes.get(type.type.id)}
             />
           ))}
+        </div>
+
+        <div>
+          <h2>Latest Tweets:</h2>
+          {this.props.twitterAuthenticated
+            ? JSON.stringify(this.state.tweets)
+            : <span>The application could not authenticate with the Twitter API.</span>
+          }
         </div>
 
       </div>
