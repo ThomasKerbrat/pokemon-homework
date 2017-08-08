@@ -2,77 +2,12 @@ import React, { Component } from 'react';
 import { BrowserRouter, Route, Link, } from 'react-router-dom';
 import './App.css';
 
-let POKEMONS, STATS_BY_TYPES;
-
 class App extends Component {
-  render() {
-    return (
-      <BrowserRouter>
-        <div className="app-container">
-          <Route path="/pokemons" component={SearchablePokemonList} />
-          <Route path="/pokemons/:pokemonName" component={PokemonDetails} />
-          {/* <Redirect from="/" to="/pokemons" /> */}
-        </div>
-      </BrowserRouter>
-    );
-  }
-}
-
-class PokemonListItem extends Component {
-  render() {
-    return (
-      <li>
-        <Link to={`/pokemons/${this.props.pokemon.identifier}`}>{this.props.pokemon.identifier}</Link>
-      </li>
-    );
-  }
-}
-
-class PokemonList extends Component {
-  render() {
-    return (
-      <ul>
-        {this.props.pokemons.map((pokemon) => (
-          <PokemonListItem pokemon={pokemon} key={pokemon.identifier} />
-        ))}
-      </ul>
-    );
-  }
-}
-
-class SearchBar extends Component {
-  constructor(props) {
-    super(props);
-    this.handleSearchTextInputChange = this.handleSearchTextInputChange.bind(this);
-  }
-
-  handleSearchTextInputChange(event) {
-    this.props.onSearchTextInput(event.target.value);
-  }
-
-  render() {
-    return (
-      <form>
-        <input
-          type="text"
-          placeholder="Search..."
-          value={this.props.searchText}
-          onChange={this.handleSearchTextInputChange}
-        />
-      </form>
-    );
-  }
-}
-
-class SearchablePokemonList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      searchText: '',
       pokemons: [],
     };
-
-    this.handleSearchTextInput = this.handleSearchTextInput.bind(this);
   }
 
   componentDidMount() {
@@ -153,17 +88,98 @@ class SearchablePokemonList extends Component {
       // console.timeEnd('computations');
       window.pokemons = pokemons
 
-      POKEMONS = pokemons
-      STATS_BY_TYPES = baseStatsByTypes
-    })
-      .catch(error => console.error(error))
+      this.setState({
+        pokemons: pokemons,
+      })
+      // TODO: baseStatsByTypes
+    }).catch(error => console.error(error))
+  }
+
+  render() {
+    let pokemon = null
+
+    return (
+      <BrowserRouter>
+        <div className="app-container">
+          <Route path="/pokemons" render={() => (
+            <SearchablePokemonList pokemons={this.state.pokemons} />
+          )} />
+          <Route path="/pokemons/:pokemonName" render={({ match }) => (
+            this.state.pokemons.findIndex(pokemon => pokemon.identifier === match.params.pokemonName) > -1
+              ? <PokemonDetails pokemon={
+                this.state.pokemons.find(pokemon => pokemon.identifier === match.params.pokemonName)
+              } />
+              : null
+          )} />
+          {/* <Redirect from="/" to="/pokemons" /> */}
+        </div>
+      </BrowserRouter>
+    );
+  }
+}
+
+class PokemonListItem extends Component {
+  render() {
+    return (
+      <li>
+        <Link to={`/pokemons/${this.props.pokemon.identifier}`}>{this.props.pokemon.identifier}</Link>
+      </li>
+    );
+  }
+}
+
+class PokemonList extends Component {
+  render() {
+    return (
+      <ul>
+        {this.props.pokemons.map((pokemon) => (
+          <PokemonListItem pokemon={pokemon} key={pokemon.identifier} />
+        ))}
+      </ul>
+    );
+  }
+}
+
+class SearchBar extends Component {
+  constructor(props) {
+    super(props);
+    this.handleSearchTextInputChange = this.handleSearchTextInputChange.bind(this);
+  }
+
+  handleSearchTextInputChange(event) {
+    this.props.onSearchTextInput(event.target.value);
+  }
+
+  render() {
+    return (
+      <form>
+        <input
+          type="text"
+          placeholder="Search..."
+          value={this.props.searchText}
+          onChange={this.handleSearchTextInputChange}
+        />
+      </form>
+    );
+  }
+}
+
+class SearchablePokemonList extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      searchText: '',
+      resultList: [],
+    };
+
+    this.handleSearchTextInput = this.handleSearchTextInput.bind(this);
   }
 
   handleSearchTextInput(searchText) {
     this.setState({
       searchText: searchText,
-      pokemons: typeof searchText === 'string' && searchText.length > 1
-        ? POKEMONS.filter((pokemon) => pokemon.identifier.indexOf(searchText) !== -1)
+      resultList: typeof searchText === 'string' && searchText.length > 1
+        ? this.props.pokemons.filter((pokemon) => pokemon.identifier.indexOf(searchText) !== -1)
         : [],
     });
   }
@@ -175,29 +191,23 @@ class SearchablePokemonList extends Component {
           searchText={this.state.searchText}
           onSearchTextInput={this.handleSearchTextInput}
         />
-        <PokemonList pokemons={this.state.pokemons} />
+        <PokemonList pokemons={this.state.resultList} />
       </div>
     );
   }
 }
 
 class PokemonDetails extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      pokemon: POKEMONS.find(pokemon => pokemon.identifier === props.match.params.pokemonName),
-    }
-  }
-
   getSpriteUrl(pokemon) {
-    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`;
+    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`
   }
 
   render() {
+    const pokemon = this.props.pokemon
     return (
       <div style={{ height: '100px', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-        <img src={this.getSpriteUrl(this.state.pokemon)} />
-        <h1>{this.state.pokemon.identifier}</h1>
+        <img src={this.getSpriteUrl(pokemon)} alt={`${pokemon.identifier} sprite`} />
+        <h1>{pokemon.identifier}</h1>
       </div>
     );
   }
