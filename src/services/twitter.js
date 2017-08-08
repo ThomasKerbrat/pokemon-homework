@@ -1,12 +1,13 @@
-const baseUrl = 'https://api.twitter.com'
+import config from '../config.js'
+const { twitterBaseUrl } = config
 let bearerToken
 
 function _auth(uri) {
-  return baseUrl + uri
+  return twitterBaseUrl + uri
 }
 
 function _url(uri) {
-  return baseUrl + '/1.1' + uri
+  return twitterBaseUrl + '/1.1' + uri
 }
 
 export function authenticate(key, secret) {

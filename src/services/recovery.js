@@ -1,11 +1,18 @@
+import config from '../config.js'
+const { baseUrl } = config
+
+function _url(uri) {
+  return baseUrl + uri
+}
+
 export function recoverData() {
   return new Promise(function (resolve, reject) {
     Promise.all([
-      fetch('/json/pokemon.json').then(response => response.json()),
-      fetch('/json/stats.json').then(response => response.json()),
-      fetch('/json/pokemon_stats.json').then(response => response.json()),
-      fetch('/json/types.json').then(response => response.json()),
-      fetch('/json/pokemon_types.json').then(response => response.json()),
+      fetch(_url('/json/pokemon.json')).then(response => response.json()),
+      fetch(_url('/json/stats.json')).then(response => response.json()),
+      fetch(_url('/json/pokemon_stats.json')).then(response => response.json()),
+      fetch(_url('/json/types.json')).then(response => response.json()),
+      fetch(_url('/json/pokemon_types.json')).then(response => response.json()),
     ]).then(response => {
       const [
         pokemons, // id, identifier, species_id, height, weight, base_experience, order, is_default,

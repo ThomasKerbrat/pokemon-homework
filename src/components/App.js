@@ -8,8 +8,8 @@ import { SearchablePokemonList } from './SearchablePokemonList'
 import { PokemonDetails } from './PokemonDetails'
 import './App.css'
 
-const key = 'SdEhDYalb3fRhNFFL2oP5hThn'
-const secret = 's9DQg9dNbqLsItK9bGImyHmqXsL3wTFIliswNnnBZglqhLtmhx'
+import config from '../config.js'
+const { key, secret } = config
 
 class App extends Component {
   constructor(props) {
@@ -35,10 +35,10 @@ class App extends Component {
     return (
       <BrowserRouter>
         <div className="app-container" style={{ display: 'flex', flexDirection: 'row' }}>
-          <Route path="/pokemons" render={() => (
+          <Route path="/" render={() => (
             <SearchablePokemonList pokemons={this.state.pokemons} />
           )} />
-          <Route path="/pokemons/:pokemonName" render={({ match }) => {
+          <Route path="/:pokemonName" render={({ match }) => {
             const index = this.state.pokemons.findIndex(pokemon => pokemon.identifier === match.params.pokemonName)
             return index !== -1
               ? <PokemonDetails
@@ -48,7 +48,6 @@ class App extends Component {
                 />
               : null
           }} />
-          {/* <Redirect from="/" to="/pokemons" /> */}
         </div>
       </BrowserRouter>
     )

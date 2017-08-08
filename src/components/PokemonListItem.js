@@ -5,7 +5,7 @@ export class PokemonListItem extends Component {
   render() {
     return (
       <li>
-        <Link to={`/pokemons/${this.props.pokemon.identifier}`}>{this.props.pokemon.identifier}</Link>
+        <Link to={`/${this.props.pokemon.identifier}`}>{this.props.pokemon.identifier}</Link>
       </li>
     )
   }

@@ -13,7 +13,9 @@
     "gh-pages": "1.0.0"
   },
   "scripts": {
+    "prestart": "node ./config/generate_config.js dev",
     "start": "react-scripts start",
+    "prebuild": "node ./config/generate_config.js prod",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
