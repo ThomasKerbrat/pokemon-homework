@@ -100,21 +100,18 @@ class App extends Component {
   }
 
   render() {
-    let pokemon = null
-
     return (
       <BrowserRouter>
         <div className="app-container">
           <Route path="/pokemons" render={() => (
             <SearchablePokemonList pokemons={this.state.pokemons} />
           )} />
-          <Route path="/pokemons/:pokemonName" render={({ match }) => (
-            this.state.pokemons.findIndex(pokemon => pokemon.identifier === match.params.pokemonName) > -1
-              ? <PokemonDetails pokemon={
-                this.state.pokemons.find(pokemon => pokemon.identifier === match.params.pokemonName)
-              } />
+          <Route path="/pokemons/:pokemonName" render={({ match }) => {
+            const index = this.state.pokemons.findIndex(pokemon => pokemon.identifier === match.params.pokemonName)
+            return index !== -1
+              ? <PokemonDetails pokemon={this.state.pokemons[index]} />
               : null
-          )} />
+          }} />
           {/* <Redirect from="/" to="/pokemons" /> */}
         </div>
       </BrowserRouter>
