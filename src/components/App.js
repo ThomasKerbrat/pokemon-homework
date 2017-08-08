@@ -11,6 +11,7 @@ class App extends Component {
     super(props)
     this.state = {
       pokemons: [],
+      baseStatsByTypes: null,
     }
   }
 
@@ -34,7 +35,9 @@ class App extends Component {
       const statsMap = new Map(stats.map(obj => [obj.id, obj]))
       const typesMap = new Map(types.map(obj => [obj.id, obj]))
 
-      const baseStatsByTypes = new Map() // Map<type_id, Map<stat_id, { values: base_stat[], average: number }>>
+      // Map<type_id, Map<stat_id, { values: base_stat[], average: number }>>
+      // Map<type_id, { values: number[], average: number, stat: { id: number, identifier: string } }[]>
+      const baseStatsByTypes = new Map()
 
       // console.time('computations')
 
@@ -47,7 +50,7 @@ class App extends Component {
         }
 
         if (!baseStatsByTypes.has(record.type_id)) {
-          baseStatsByTypes.set(record.type_id, new Map())
+          baseStatsByTypes.set(record.type_id, [])
         }
 
         pokemon.types.push({
@@ -65,13 +68,15 @@ class App extends Component {
         }
 
         pokemon.types.forEach(type => {
-          const typeMap = baseStatsByTypes.get(type.type.id)
+          const statsArray = baseStatsByTypes.get(type.type.id)
+          let index = statsArray.findIndex(stat => stat.stat.id === record.stat_id)
 
-          if (!typeMap.has(record.stat_id)) {
-            typeMap.set(record.stat_id, { values: [], average: -1 })
+          if (index === -1) {
+            statsArray.push({ values: [], average: -1, stat: stat })
+            index = statsArray.length - 1
           }
 
-          typeMap.get(record.stat_id).values.push(record.base_stat)
+          statsArray[index].values.push(record.base_stat)
         })
 
         pokemon.stats.push({
@@ -91,25 +96,26 @@ class App extends Component {
 
       // console.timeEnd('computations')
       window.pokemons = pokemons
+      window.baseStatsByTypes = baseStatsByTypes
 
       this.setState({
         pokemons: pokemons,
+        baseStatsByTypes: baseStatsByTypes,
       })
-      // TODO: baseStatsByTypes
     }).catch(error => console.error(error))
   }
 
   render() {
     return (
       <BrowserRouter>
-        <div className="app-container">
+        <div className="app-container" style={{ display: 'flex', flexDirection: 'row' }}>
           <Route path="/pokemons" render={() => (
             <SearchablePokemonList pokemons={this.state.pokemons} />
           )} />
           <Route path="/pokemons/:pokemonName" render={({ match }) => {
             const index = this.state.pokemons.findIndex(pokemon => pokemon.identifier === match.params.pokemonName)
             return index !== -1
-              ? <PokemonDetails pokemon={this.state.pokemons[index]} />
+              ? <PokemonDetails pokemon={this.state.pokemons[index]} baseStatsByTypes={this.state.baseStatsByTypes} />
               : null
           }} />
           {/* <Redirect from="/" to="/pokemons" /> */}
