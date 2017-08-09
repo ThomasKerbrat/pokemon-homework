@@ -86,6 +86,9 @@ export function recoverData() {
 
       // console.timeEnd('computations')
 
+      window.pokemons = pokemons
+      window.baseStatsByTypes = baseStatsByTypes
+
       resolve({
         pokemons: pokemons,
         baseStatsByTypes: baseStatsByTypes,
